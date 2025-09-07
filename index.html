@@ -3,96 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hizmet Detayları - Demo Site</title>
+    <title>Hizmet Detayları</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <!-- Header - Logo sol, navigasyon sağ -->
-        <header class="header">
-            <div class="logo">
+    <div class="parent">
+        <!-- Div16 - Header Navigation (Üst kısım) -->
+        <div class="div16">
+            <div class="brand-logo">
                 <i class="fas fa-leaf"></i>
                 <span>HizmetPro</span>
             </div>
             
-            <div class="nav-section">
-                <nav class="nav">
-                    <a href="#" class="nav-link active">
+            <div class="right-navigation">
+                <div class="menu-items">
+                    <a href="#" class="menu-item active-item">
                         <i class="fas fa-briefcase"></i>
-                        Fırsatlarım
+                        <span>Fırsatlarım</span>
                     </a>
-                    <a href="#" class="nav-link">
+                    <a href="#" class="menu-item">
                         <i class="fas fa-clipboard-list"></i>
-                        Tekliflerim
+                        <span>Tekliflerim</span>
                     </a>
-                    <a href="#" class="nav-link">
+                    <a href="#" class="menu-item">
                         <i class="fas fa-trophy"></i>
-                        Kazandıklarım
+                        <span>Kazandıklarım</span>
                     </a>
-                    <a href="#" class="nav-link">
+                    <a href="#" class="menu-item">
                         <i class="fas fa-cog"></i>
-                        Hizmetlerim
+                        <span>Hizmetlerim</span>
                     </a>
-                </nav>
-                <div class="balance">
+                </div>
+                <div class="wallet-info">
                     <i class="fas fa-wallet"></i>
-                    Bakiyem: <strong>0 TL</strong>
+                    <span>Bakiyem: <strong>0 TL</strong></span>
                 </div>
             </div>
-        </header>
+        </div>
 
-        <!-- Ana içerik - sola kaydırılmış -->
-        <main class="main-content">
-            <div class="back-button">
-                <i class="fas fa-arrow-left"></i>
-            </div>
-            
-            <div class="service-form">
-                <h1 class="service-title">Detay</h1>
+        <!-- Div15 - Ana İçerik -->
+        <div class="div15">
+                <button class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
                 
-                <form id="serviceForm" class="service-form-fields">
-                    <div class="form-group">
-                        <label class="form-label" for="siteType">Site tipi nedir?</label>
-                        <select id="siteType" name="siteType" class="form-input" required>
+                <div class="form-container">
+                    <h1 class="page-title">Detay</h1>
+                    
+                    <div class="question-block">
+                        <label class="question-label">Site tipi nedir?</label>
+                        <select class="input-field" id="siteType">
                             <option value="">Seçiniz...</option>
-                            <option value="basit-icerik">Basit içerik (şirket/ürün tanıtım, blog)</option>
-                            <option value="e-ticaret">E-ticaret sitesi</option>
+                            <option value="basit">Basit içerik (şirket/ürün tanıtım, blog)</option>
+                            <option value="eticaret">E-ticaret sitesi</option>
                             <option value="kurumsal">Kurumsal web sitesi</option>
                             <option value="portfolio">Portfolio/kişisel site</option>
                             <option value="diger">Diğer</option>
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="expertise">Özellikle çıradiğin bir uzmanlık alanı var mı?</label>
-                        <select id="expertise" name="expertise" class="form-input">
-                            <option value="tercihim-yok">Tercihim yok</option>
+                    <div class="question-block">
+                        <label class="question-label">Özellikle çıradiğin bir uzmanlık alanı var mı?</label>
+                        <select class="input-field" id="expertise">
+                            <option value="yok">Tercihim yok</option>
                             <option value="frontend">Frontend geliştirme</option>
                             <option value="backend">Backend geliştirme</option>
                             <option value="fullstack">Full-stack geliştirme</option>
                             <option value="tasarim">UI/UX tasarım</option>
                             <option value="wordpress">WordPress</option>
-                            <option value="e-ticaret">E-ticaret</option>
+                            <option value="eticaret">E-ticaret</option>
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="businessType">Bu web sitesi ne tür bir iş için?</label>
-                        <select id="businessType" name="businessType" class="form-input" required>
+                    <div class="question-block">
+                        <label class="question-label">Bu web sitesi ne tür bir iş için?</label>
+                        <select class="input-field" id="businessType">
                             <option value="">Seçiniz...</option>
                             <option value="firma">Firma, şahıs şirketi</option>
                             <option value="kisisel">Kişisel proje</option>
                             <option value="startup">Startup</option>
                             <option value="freelancer">Freelancer</option>
-                            <option value="sivil-toplum">Sivil toplum kuruluşu</option>
+                            <option value="sivil">Sivil toplum kuruluşu</option>
                             <option value="diger">Diğer</option>
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="budget">Bütçe yaklaşık kaç TL?</label>
-                        <select id="budget" name="budget" class="form-input" required>
+                    <div class="question-block">
+                        <label class="question-label">Bütçe yaklaşık kaç TL?</label>
+                        <select class="input-field" id="budget">
                             <option value="">Seçiniz...</option>
                             <option value="1000-3000">1.000 - 3.000 TL</option>
                             <option value="3000-5000">3.000 - 5.000 TL</option>
@@ -102,60 +101,58 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="services">Hangi hizmetlere ihtiyacın var?</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="services" value="tasarim" class="checkbox-input">
-                                <span class="checkbox-text">Tasarım</span>
+                    <div class="question-block">
+                        <label class="question-label">Hangi hizmetlere ihtiyacın var?</label>
+                        <div class="checkbox-list">
+                            <label class="checkbox-item">
+                                <input type="checkbox" value="tasarim">
+                                <span>Tasarım</span>
                             </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="services" value="gelistirme" class="checkbox-input">
-                                <span class="checkbox-text">Geliştirme</span>
+                            <label class="checkbox-item">
+                                <input type="checkbox" value="gelistirme">
+                                <span>Geliştirme</span>
                             </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="services" value="icerik" class="checkbox-input">
-                                <span class="checkbox-text">İçerik yazımı</span>
+                            <label class="checkbox-item">
+                                <input type="checkbox" value="icerik">
+                                <span>İçerik yazımı</span>
                             </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="services" value="seo" class="checkbox-input">
-                                <span class="checkbox-text">SEO optimizasyonu</span>
+                            <label class="checkbox-item">
+                                <input type="checkbox" value="seo">
+                                <span>SEO optimizasyonu</span>
                             </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="services" value="bakim" class="checkbox-input">
-                                <span class="checkbox-text">Bakım ve destek</span>
+                            <label class="checkbox-item">
+                                <input type="checkbox" value="bakim">
+                                <span>Bakım ve destek</span>
                             </label>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="details">İşin detayları nelerdir?</label>
-                        <textarea id="details" name="details" class="form-textarea" rows="4" placeholder="Projenizin detaylarını açıklayın..." required></textarea>
-                        <small class="form-help">Projenizle ilgili özel isteklerinizi, beklentilerinizi ve önemli detayları belirtin.</small>
+                    <div class="question-block">
+                        <label class="question-label">İşin detayları nelerdir?</label>
+                        <textarea class="text-area" id="details" placeholder="Projenizin detaylarını açıklayın..."></textarea>
+                        <small class="help-text">Projenizle ilgili özel isteklerinizi, beklentilerinizi ve önemli detayları belirtin.</small>
                     </div>
-                </form>
 
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <span>KK</span>
+                    <div class="user-section">
+                        <div class="user-pic">KK</div>
+                        <div class="user-details">
+                            <strong>Kerem Kaan</strong>
+                            <p>Ayarlar</p>
+                        </div>
                     </div>
-                    <div class="user-details">
-                        <strong>Kerem Kaan</strong>
-                        <p>Ayarlar</p>
-                    </div>
-                </div>
 
-                <div class="action-buttons">
-                    <button class="btn-secondary">
-                        <i class="fas fa-trash"></i>
-                        Reddet
-                    </button>
-                    <button class="btn-primary">
-                        Teklif ver (2.000 TL)
-                    </button>
+                    <div class="action-row">
+                        <button class="reject-btn">
+                            <i class="fas fa-trash"></i>
+                            Reddet
+                        </button>
+                        <button class="submit-btn">
+                            Teklif ver (2.000 TL)
+                        </button>
+                    </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script src="script.js"></script>

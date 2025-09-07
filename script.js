@@ -1,74 +1,97 @@
 // DOM Elements
-const backButton = document.querySelector('.back-button');
-const btnSecondary = document.querySelector('.btn-secondary');
-const btnPrimary = document.querySelector('.btn-primary');
-const formGroups = document.querySelectorAll('.form-group');
-const userAvatar = document.querySelector('.user-avatar');
-const serviceForm = document.getElementById('serviceForm');
+const backBtn = document.querySelector('.back-btn');
+const rejectBtn = document.querySelector('.reject-btn');
+const submitBtn = document.querySelector('.submit-btn');
+const siteTypeSelect = document.getElementById('siteType');
+const budgetSelect = document.getElementById('budget');
+const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+const textArea = document.getElementById('details');
 
-// Animation delays for form groups
-formGroups.forEach((group, index) => {
-    group.style.animationDelay = `${index * 0.1}s`;
-});
+// Price calculation
+let basePrice = 2000;
 
-// Back button functionality
-backButton.addEventListener('click', () => {
-    backButton.style.transform = 'scale(0.9)';
+function calculatePrice() {
+    let price = basePrice;
+    
+    // Site type multipliers
+    const siteTypeMultipliers = {
+        'basit': 1.0,
+        'eticaret': 2.5,
+        'kurumsal': 2.0,
+        'portfolio': 1.2,
+        'diger': 1.5
+    };
+    
+    // Service additions
+    const serviceAdditions = {
+        'tasarim': 500,
+        'gelistirme': 1500,
+        'icerik': 300,
+        'seo': 400,
+        'bakim': 200
+    };
+    
+    // Apply site type multiplier
+    if (siteTypeSelect.value && siteTypeMultipliers[siteTypeSelect.value]) {
+        price *= siteTypeMultipliers[siteTypeSelect.value];
+    }
+    
+    // Add selected services
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked && serviceAdditions[checkbox.value]) {
+            price += serviceAdditions[checkbox.value];
+        }
+    });
+    
+    return price;
+}
+
+function updatePriceDisplay() {
+    const price = calculatePrice();
+    const formattedPrice = price.toLocaleString('tr-TR');
+    submitBtn.innerHTML = `Teklif ver (${formattedPrice} TL)`;
+}
+
+// Event Listeners
+backBtn.addEventListener('click', () => {
+    backBtn.style.transform = 'scale(0.9)';
     setTimeout(() => {
-        backButton.style.transform = 'scale(1)';
-        showNotification('Geri gidiliyor...', 'info');
+        backBtn.style.transform = 'scale(1)';
+        showMessage('Geri gidiliyor...', 'info');
     }, 150);
 });
 
-// Secondary button (Reddet) functionality
-btnSecondary.addEventListener('click', () => {
-    showConfirmDialog(
-        'Bu teklifi reddetmek istediğinizden emin misiniz?',
-        () => {
-            showNotification('Teklif reddedildi!', 'error');
-            serviceForm.reset();
-        }
-    );
+rejectBtn.addEventListener('click', () => {
+    if (confirm('Bu teklifi reddetmek istediğinizden emin misiniz?')) {
+        showMessage('Teklif reddedildi!', 'error');
+        resetForm();
+    }
 });
 
-// Primary button (Teklif ver) functionality
-btnPrimary.addEventListener('click', () => {
-    if (!validateForm()) {
-        showNotification('Lütfen tüm gerekli alanları doldurun!', 'warning');
-        return;
-    }
-    
-    const formData = getFormData();
-    
-    btnPrimary.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Teklif hazırlanıyor...';
-    btnPrimary.disabled = true;
-    
-    setTimeout(() => {
-        btnPrimary.innerHTML = '<i class="fas fa-check"></i> Teklif Gönderildi!';
-        btnPrimary.style.background = '#27ae60';
-        showNotification('Teklifiniz başarıyla gönderildi!', 'success');
+submitBtn.addEventListener('click', () => {
+    if (validateForm()) {
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
+        submitBtn.disabled = true;
         
         setTimeout(() => {
-            btnPrimary.innerHTML = 'Teklif ver (Hesaplanıyor...)';
-            btnPrimary.disabled = false;
-            btnPrimary.style.background = '#2ecc71';
-            updatePriceEstimate(formData);
-        }, 3000);
-    }, 2000);
+            submitBtn.innerHTML = '<i class="fas fa-check"></i> Gönderildi!';
+            submitBtn.style.background = '#229954';
+            showMessage('Teklifiniz başarıyla gönderildi!', 'success');
+            
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.style.background = '#27ae60';
+                updatePriceDisplay();
+            }, 3000);
+        }, 2000);
+    } else {
+        showMessage('Lütfen tüm gerekli alanları doldurun!', 'warning');
+    }
 });
 
-// User avatar click functionality
-userAvatar.addEventListener('click', () => {
-    userAvatar.style.transform = 'scale(1.1) rotate(5deg)';
-    setTimeout(() => {
-        userAvatar.style.transform = 'scale(1) rotate(0deg)';
-    }, 200);
-    showNotification('Kullanıcı profili!', 'info');
-});
-
-// Form validation function
+// Form validation
 function validateForm() {
-    const requiredFields = serviceForm.querySelectorAll('[required]');
+    const requiredFields = [siteTypeSelect, budgetSelect, textArea];
     let isValid = true;
     
     requiredFields.forEach(field => {
@@ -76,318 +99,145 @@ function validateForm() {
             field.style.borderColor = '#e74c3c';
             isValid = false;
         } else {
-            field.style.borderColor = '#2ecc71';
+            field.style.borderColor = '#27ae60';
         }
     });
     
     return isValid;
 }
 
-// Get form data function
-function getFormData() {
-    const formData = new FormData(serviceForm);
-    const data = {};
+// Reset form
+function resetForm() {
+    siteTypeSelect.value = '';
+    document.getElementById('expertise').value = 'yok';
+    document.getElementById('businessType').value = '';
+    budgetSelect.value = '';
+    textArea.value = '';
     
-    for (let [key, value] of formData.entries()) {
-        if (data[key]) {
-            if (Array.isArray(data[key])) {
-                data[key].push(value);
-            } else {
-                data[key] = [data[key], value];
-            }
-        } else {
-            data[key] = value;
-        }
-    }
-    
-    const checkboxes = serviceForm.querySelectorAll('input[type="checkbox"]:checked');
-    const services = [];
     checkboxes.forEach(checkbox => {
-        services.push(checkbox.value);
+        checkbox.checked = false;
     });
-    data.services = services;
     
-    return data;
+    updatePriceDisplay();
 }
 
-// Update price estimate based on form data
-function updatePriceEstimate(data) {
-    let basePrice = 2000;
-    
-    const priceModifiers = {
-        siteType: {
-            'basit-icerik': 1.0,
-            'e-ticaret': 2.5,
-            'kurumsal': 2.0,
-            'portfolio': 1.2,
-            'diger': 1.5
-        },
-        services: {
-            'tasarim': 500,
-            'gelistirme': 1500,
-            'icerik': 300,
-            'seo': 400,
-            'bakim': 200
-        }
-    };
-    
-    if (data.siteType && priceModifiers.siteType[data.siteType]) {
-        basePrice *= priceModifiers.siteType[data.siteType];
+// Message system
+function showMessage(text, type) {
+    // Remove existing message
+    const existingMsg = document.querySelector('.message-popup');
+    if (existingMsg) {
+        existingMsg.remove();
     }
     
-    if (data.services && Array.isArray(data.services)) {
-        data.services.forEach(service => {
-            if (priceModifiers.services[service]) {
-                basePrice += priceModifiers.services[service];
-            }
-        });
-    }
-    
-    const formattedPrice = basePrice.toLocaleString('tr-TR');
-    btnPrimary.innerHTML = `Teklif ver (${formattedPrice} TL)`;
-}
-
-// Real-time form updates
-serviceForm.addEventListener('change', () => {
-    const formData = getFormData();
-    updatePriceEstimate(formData);
-});
-
-// Notification system
-function showNotification(message, type = 'info') {
-    const existingNotification = document.querySelector('.notification');
-    if (existingNotification) {
-        existingNotification.remove();
-    }
-    
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <i class="fas ${getNotificationIcon(type)}"></i>
-        <span>${message}</span>
-        <button class="notification-close">&times;</button>
+    // Create message
+    const message = document.createElement('div');
+    message.className = `message-popup message-${type}`;
+    message.innerHTML = `
+        <i class="fas ${getMessageIcon(type)}"></i>
+        <span>${text}</span>
     `;
     
-    document.body.appendChild(notification);
+    // Add styles
+    message.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        z-index: 1000;
+        animation: slideInFromRight 0.3s ease-out;
+        border-left: 4px solid ${getMessageColor(type)};
+        color: ${getMessageColor(type)};
+        font-weight: 500;
+    `;
     
+    document.body.appendChild(message);
+    
+    // Auto remove
     setTimeout(() => {
-        if (notification.parentNode) {
-            notification.remove();
+        if (message.parentNode) {
+            message.style.animation = 'slideOutToRight 0.3s ease-in';
+            setTimeout(() => message.remove(), 300);
         }
-    }, 5000);
-    
-    notification.querySelector('.notification-close').addEventListener('click', () => {
-        notification.remove();
-    });
+    }, 4000);
 }
 
-function getNotificationIcon(type) {
-    switch (type) {
-        case 'success': return 'fa-check-circle';
-        case 'error': return 'fa-exclamation-circle';
-        case 'warning': return 'fa-exclamation-triangle';
-        default: return 'fa-info-circle';
-    }
+function getMessageIcon(type) {
+    const icons = {
+        'success': 'fa-check-circle',
+        'error': 'fa-exclamation-circle',
+        'warning': 'fa-exclamation-triangle',
+        'info': 'fa-info-circle'
+    };
+    return icons[type] || icons.info;
 }
 
-// Confirm dialog
-function showConfirmDialog(message, onConfirm) {
-    const overlay = document.createElement('div');
-    overlay.className = 'dialog-overlay';
-    overlay.innerHTML = `
-        <div class="dialog">
-            <div class="dialog-content">
-                <h3>Onay</h3>
-                <p>${message}</p>
-                <div class="dialog-buttons">
-                    <button class="btn-dialog-cancel">İptal</button>
-                    <button class="btn-dialog-confirm">Evet</button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(overlay);
-    
-    overlay.querySelector('.btn-dialog-cancel').addEventListener('click', () => {
-        overlay.remove();
-    });
-    
-    overlay.querySelector('.btn-dialog-confirm').addEventListener('click', () => {
-        onConfirm();
-        overlay.remove();
-    });
-    
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            overlay.remove();
-        }
-    });
+function getMessageColor(type) {
+    const colors = {
+        'success': '#27ae60',
+        'error': '#e74c3c',
+        'warning': '#f39c12',
+        'info': '#3498db'
+    };
+    return colors[type] || colors.info;
 }
 
-// Add hover effects to form groups
-formGroups.forEach(group => {
-    group.addEventListener('mouseenter', () => {
-        group.style.transform = 'translateX(5px)';
-        group.style.boxShadow = '0 4px 15px rgba(46, 204, 113, 0.1)';
+// Real-time price updates
+siteTypeSelect.addEventListener('change', updatePriceDisplay);
+budgetSelect.addEventListener('change', updatePriceDisplay);
+checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', updatePriceDisplay);
+});
+
+// Hover effects for question blocks
+document.querySelectorAll('.question-block').forEach(block => {
+    block.addEventListener('mouseenter', () => {
+        block.style.transform = 'translateX(12px)';
+        block.style.boxShadow = '0 8px 25px rgba(39, 174, 96, 0.15)';
     });
     
-    group.addEventListener('mouseleave', () => {
-        group.style.transform = 'translateX(0)';
-        group.style.boxShadow = 'none';
+    block.addEventListener('mouseleave', () => {
+        block.style.transform = 'translateX(8px)';
+        block.style.boxShadow = '0 5px 20px rgba(39, 174, 96, 0.1)';
     });
 });
 
-// Add notification and dialog styles
-const additionalStyles = `
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: white;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    z-index: 1000;
-    animation: slideInRight 0.3s ease-out;
-    min-width: 300px;
-}
-
-.notification-success {
-    border-left: 4px solid #2ecc71;
-    color: #27ae60;
-}
-
-.notification-error {
-    border-left: 4px solid #e74c3c;
-    color: #c0392b;
-}
-
-.notification-warning {
-    border-left: 4px solid #f39c12;
-    color: #d68910;
-}
-
-.notification-info {
-    border-left: 4px solid #3498db;
-    color: #2980b9;
-}
-
-.notification-close {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    margin-left: auto;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-}
-
-.notification-close:hover {
-    opacity: 1;
-}
-
-.dialog-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1001;
-    animation: fadeIn 0.2s ease-out;
-}
-
-.dialog {
-    background: white;
-    border-radius: 12px;
-    padding: 2rem;
-    max-width: 400px;
-    width: 90%;
-    animation: scaleIn 0.2s ease-out;
-}
-
-.dialog h3 {
-    margin-bottom: 1rem;
-    color: #333;
-}
-
-.dialog p {
-    margin-bottom: 2rem;
-    color: #666;
-    line-height: 1.5;
-}
-
-.dialog-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-}
-
-.btn-dialog-cancel,
-.btn-dialog-confirm {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
-}
-
-.btn-dialog-cancel {
-    background: #f8f9fa;
-    color: #666;
-}
-
-.btn-dialog-cancel:hover {
-    background: #e9ecef;
-}
-
-.btn-dialog-confirm {
-    background: #e74c3c;
-    color: white;
-}
-
-.btn-dialog-confirm:hover {
-    background: #c0392b;
-}
-
-@keyframes slideInRight {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
+// Add animation styles
+const animationStyles = `
+    @keyframes slideInFromRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
-    to {
-        transform: translateX(0);
-        opacity: 1;
+    
+    @keyframes slideOutToRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
     }
-}
-
-@keyframes scaleIn {
-    from {
-        transform: scale(0.9);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
 `;
 
-// Inject additional styles
 const styleSheet = document.createElement('style');
-styleSheet.textContent = additionalStyles;
+styleSheet.textContent = animationStyles;
 document.head.appendChild(styleSheet);
 
-// Initialize page
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    showNotification('Sayfa yüklendi! Form doldurarak teklif alabilirsiniz.', 'success');
-    updatePriceEstimate({});
+    updatePriceDisplay();
+    showMessage('Sayfa yüklendi! Form doldurarak teklif alabilirsiniz.', 'success');
 });
