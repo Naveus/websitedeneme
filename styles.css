@@ -25,15 +25,11 @@ body {
     border-bottom: 1px solid #e0e0e0;
     padding: 1rem 2rem;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 100;
-}
-
-.header .nav {
-    margin-left: auto;
+    position: relative;
 }
 
 .logo {
@@ -43,6 +39,8 @@ body {
     font-size: 1.5rem;
     font-weight: bold;
     color: #2ecc71;
+    position: absolute;
+    left: 2rem;
 }
 
 .logo i {
@@ -54,7 +52,9 @@ body {
     align-items: center;
     gap: 2rem;
     margin-left: auto;
-    padding-right: 1rem;
+    width: 100%;
+    justify-content: flex-end;
+    padding-right: 2rem;
 }
 
 .nav-link {
@@ -92,9 +92,10 @@ body {
 /* Main Content */
 .main-content {
     padding: 2rem;
-    max-width: 700px;
-    margin: 0 auto;
-    margin-left: 15%;
+    max-width: 600px;
+    margin: 0;
+    margin-left: 10%;
+    margin-right: auto;
 }
 
 .back-button {
@@ -323,6 +324,12 @@ body {
         flex-direction: column;
         gap: 1rem;
         justify-content: center;
+        position: static;
+    }
+    
+    .logo {
+        position: static;
+        margin-bottom: 1rem;
     }
     
     .nav {
@@ -331,12 +338,14 @@ body {
         justify-content: center;
         margin-left: 0;
         padding-right: 0;
+        width: auto;
     }
     
     .main-content {
         padding: 1rem;
-        margin-left: auto;
+        margin-left: 5%;
         margin-right: auto;
+        max-width: 90%;
     }
     
     .service-form {
