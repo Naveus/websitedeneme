@@ -13,7 +13,6 @@ formGroups.forEach((group, index) => {
 
 // Back button functionality
 backButton.addEventListener('click', () => {
-    // Simulate going back
     backButton.style.transform = 'scale(0.9)';
     setTimeout(() => {
         backButton.style.transform = 'scale(1)';
@@ -27,41 +26,28 @@ btnSecondary.addEventListener('click', () => {
         'Bu teklifi reddetmek istediğinizden emin misiniz?',
         () => {
             showNotification('Teklif reddedildi!', 'error');
-            // Simulate rejection animation
-            document.querySelector('.service-form').style.opacity = '0.5';
-            setTimeout(() => {
-                document.querySelector('.service-form').style.opacity = '1';
-            }, 1000);
+            serviceForm.reset();
         }
     );
 });
 
 // Primary button (Teklif ver) functionality
 btnPrimary.addEventListener('click', () => {
-    // Validate form first
     if (!validateForm()) {
         showNotification('Lütfen tüm gerekli alanları doldurun!', 'warning');
         return;
     }
     
-    // Get form data
     const formData = getFormData();
-    console.log('Form Data:', formData);
     
-    // Add loading state
     btnPrimary.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Teklif hazırlanıyor...';
     btnPrimary.disabled = true;
     
-    // Simulate API call
     setTimeout(() => {
         btnPrimary.innerHTML = '<i class="fas fa-check"></i> Teklif Gönderildi!';
         btnPrimary.style.background = '#27ae60';
         showNotification('Teklifiniz başarıyla gönderildi!', 'success');
         
-        // Show form data in console for demo
-        showFormSummary(formData);
-        
-        // Reset button after 3 seconds
         setTimeout(() => {
             btnPrimary.innerHTML = 'Teklif ver (Hesaplanıyor...)';
             btnPrimary.disabled = false;
@@ -80,9 +66,95 @@ userAvatar.addEventListener('click', () => {
     showNotification('Kullanıcı profili!', 'info');
 });
 
+// Form validation function
+function validateForm() {
+    const requiredFields = serviceForm.querySelectorAll('[required]');
+    let isValid = true;
+    
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            field.style.borderColor = '#e74c3c';
+            isValid = false;
+        } else {
+            field.style.borderColor = '#2ecc71';
+        }
+    });
+    
+    return isValid;
+}
+
+// Get form data function
+function getFormData() {
+    const formData = new FormData(serviceForm);
+    const data = {};
+    
+    for (let [key, value] of formData.entries()) {
+        if (data[key]) {
+            if (Array.isArray(data[key])) {
+                data[key].push(value);
+            } else {
+                data[key] = [data[key], value];
+            }
+        } else {
+            data[key] = value;
+        }
+    }
+    
+    const checkboxes = serviceForm.querySelectorAll('input[type="checkbox"]:checked');
+    const services = [];
+    checkboxes.forEach(checkbox => {
+        services.push(checkbox.value);
+    });
+    data.services = services;
+    
+    return data;
+}
+
+// Update price estimate based on form data
+function updatePriceEstimate(data) {
+    let basePrice = 2000;
+    
+    const priceModifiers = {
+        siteType: {
+            'basit-icerik': 1.0,
+            'e-ticaret': 2.5,
+            'kurumsal': 2.0,
+            'portfolio': 1.2,
+            'diger': 1.5
+        },
+        services: {
+            'tasarim': 500,
+            'gelistirme': 1500,
+            'icerik': 300,
+            'seo': 400,
+            'bakim': 200
+        }
+    };
+    
+    if (data.siteType && priceModifiers.siteType[data.siteType]) {
+        basePrice *= priceModifiers.siteType[data.siteType];
+    }
+    
+    if (data.services && Array.isArray(data.services)) {
+        data.services.forEach(service => {
+            if (priceModifiers.services[service]) {
+                basePrice += priceModifiers.services[service];
+            }
+        });
+    }
+    
+    const formattedPrice = basePrice.toLocaleString('tr-TR');
+    btnPrimary.innerHTML = `Teklif ver (${formattedPrice} TL)`;
+}
+
+// Real-time form updates
+serviceForm.addEventListener('change', () => {
+    const formData = getFormData();
+    updatePriceEstimate(formData);
+});
+
 // Notification system
 function showNotification(message, type = 'info') {
-    // Remove existing notification
     const existingNotification = document.querySelector('.notification');
     if (existingNotification) {
         existingNotification.remove();
@@ -98,14 +170,12 @@ function showNotification(message, type = 'info') {
     
     document.body.appendChild(notification);
     
-    // Auto remove after 5 seconds
     setTimeout(() => {
         if (notification.parentNode) {
             notification.remove();
         }
     }, 5000);
     
-    // Close button functionality
     notification.querySelector('.notification-close').addEventListener('click', () => {
         notification.remove();
     });
@@ -139,7 +209,6 @@ function showConfirmDialog(message, onConfirm) {
     
     document.body.appendChild(overlay);
     
-    // Event listeners
     overlay.querySelector('.btn-dialog-cancel').addEventListener('click', () => {
         overlay.remove();
     });
@@ -156,9 +225,6 @@ function showConfirmDialog(message, onConfirm) {
     });
 }
 
-// Add smooth scroll behavior
-document.documentElement.style.scrollBehavior = 'smooth';
-
 // Add hover effects to form groups
 formGroups.forEach(group => {
     group.addEventListener('mouseenter', () => {
@@ -172,7 +238,7 @@ formGroups.forEach(group => {
     });
 });
 
-// Add CSS for notifications and dialogs
+// Add notification and dialog styles
 const additionalStyles = `
 .notification {
     position: fixed;
@@ -320,132 +386,8 @@ const styleSheet = document.createElement('style');
 styleSheet.textContent = additionalStyles;
 document.head.appendChild(styleSheet);
 
-// Form validation function
-function validateForm() {
-    const requiredFields = serviceForm.querySelectorAll('[required]');
-    let isValid = true;
-    
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            field.style.borderColor = '#e74c3c';
-            isValid = false;
-        } else {
-            field.style.borderColor = '#2ecc71';
-        }
-    });
-    
-    return isValid;
-}
-
-// Get form data function
-function getFormData() {
-    const formData = new FormData(serviceForm);
-    const data = {};
-    
-    // Get regular form fields
-    for (let [key, value] of formData.entries()) {
-        if (data[key]) {
-            // Handle multiple values (like checkboxes)
-            if (Array.isArray(data[key])) {
-                data[key].push(value);
-            } else {
-                data[key] = [data[key], value];
-            }
-        } else {
-            data[key] = value;
-        }
-    }
-    
-    // Get checkbox values specifically
-    const checkboxes = serviceForm.querySelectorAll('input[type="checkbox"]:checked');
-    const services = [];
-    checkboxes.forEach(checkbox => {
-        services.push(checkbox.value);
-    });
-    data.services = services;
-    
-    return data;
-}
-
-// Show form summary
-function showFormSummary(data) {
-    let summary = 'Form Verileri:\n\n';
-    
-    const fieldNames = {
-        siteType: 'Site Tipi',
-        expertise: 'Uzmanlık Alanı',
-        businessType: 'İş Türü',
-        budget: 'Bütçe',
-        services: 'Hizmetler',
-        details: 'İş Detayları'
-    };
-    
-    Object.keys(data).forEach(key => {
-        if (data[key] && data[key] !== '') {
-            summary += `${fieldNames[key] || key}: `;
-            if (Array.isArray(data[key])) {
-                summary += data[key].join(', ');
-            } else {
-                summary += data[key];
-            }
-            summary += '\n';
-        }
-    });
-    
-    console.log(summary);
-}
-
-// Update price estimate based on form data
-function updatePriceEstimate(data) {
-    let basePrice = 2000;
-    
-    // Price modifiers based on selections
-    const priceModifiers = {
-        siteType: {
-            'basit-icerik': 1.0,
-            'e-ticaret': 2.5,
-            'kurumsal': 2.0,
-            'portfolio': 1.2,
-            'diger': 1.5
-        },
-        services: {
-            'tasarim': 500,
-            'gelistirme': 1500,
-            'icerik': 300,
-            'seo': 400,
-            'bakim': 200
-        }
-    };
-    
-    // Apply site type modifier
-    if (data.siteType && priceModifiers.siteType[data.siteType]) {
-        basePrice *= priceModifiers.siteType[data.siteType];
-    }
-    
-    // Add service prices
-    if (data.services && Array.isArray(data.services)) {
-        data.services.forEach(service => {
-            if (priceModifiers.services[service]) {
-                basePrice += priceModifiers.services[service];
-            }
-        });
-    }
-    
-    // Format price
-    const formattedPrice = basePrice.toLocaleString('tr-TR');
-    btnPrimary.innerHTML = `Teklif ver (${formattedPrice} TL)`;
-}
-
-// Real-time form updates
-serviceForm.addEventListener('change', () => {
-    const formData = getFormData();
-    updatePriceEstimate(formData);
-});
-
 // Initialize page
 document.addEventListener('DOMContentLoaded', () => {
     showNotification('Sayfa yüklendi! Form doldurarak teklif alabilirsiniz.', 'success');
-    
-    // Set initial price
     updatePriceEstimate({});
 });
