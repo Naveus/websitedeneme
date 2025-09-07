@@ -24,22 +24,22 @@ body {
     background: white;
     border-bottom: 1px solid #e0e0e0;
     padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 100;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .header-left {
-    flex: 0 0 auto;
+    justify-self: start;
 }
 
 .header-right {
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
+    justify-self: end;
 }
 
 .logo {
@@ -58,7 +58,8 @@ body {
 .nav {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
+    white-space: nowrap;
 }
 
 .nav-link {
@@ -325,14 +326,15 @@ body {
 @media (max-width: 768px) {
     .header {
         padding: 1rem;
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
         gap: 1rem;
+        text-align: center;
     }
     
     .header-left,
     .header-right {
-        width: 100%;
-        justify-content: center;
+        justify-self: center;
     }
     
     .nav {
